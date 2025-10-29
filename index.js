@@ -1,0 +1,35 @@
+import "dotenv/config";
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import morgan from "morgan";
+import path from "path";
+import payslipRoutes from "./src/routes/payslip.routes.js";
+import { validatePayslip } from "./src/validators/paySlip.schema.js";
+import { fileURLToPath } from "url";
+import { uploadLogo } from "./src/middleware/uploadLogo.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+app.use(cors());
+app.use(express.json({ limit: "1mb" }));
+app.use(morgan("dev"));
+
+app.get("/", (_, res) => res.json({ ok: true }));
+app.use("/public", express.static(path.join(process.cwd(), "public")));
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use("/api/payslips", payslipRoutes);
+
+// basic error handler
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(400).json({ message: err?.message || "Unexpected error" });
+});
+
+const PORT = process.env.PORT || 5000;
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => app.listen(PORT, () => console.log("Server on " + PORT)))
+  .catch((e) => console.error("Mongo error", e));

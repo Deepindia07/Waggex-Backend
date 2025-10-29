@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Payslip – {{employee.name}} – {{pay.periodLabel}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        @page {
+            size: A4;
+            margin: 16mm;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: #e9ebef;
+            color: #0f2a44;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .sheet {
+            background: #fff;
+            border: 1px solid #cfd6dd;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+        }
+
+        :root {
+            --ink: #0f2a44;
+            --muted: #6b7a8b;
+            --line: #d9e2ea;
+            --accent: #9BBBE0;
+            --accent2: #D1DFEA;
+            --success-ink: #10324f;
+            ;
+        }
+
+        .header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 20px 24px 8px 24px;
+            border-bottom: 1px solid var(--line);
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+            {
+                {
+                !-- background: linear-gradient(180deg, var(--accent2) 66.98%, var(--accent) 100%);
+                --
+            }
+        }
+
+        .brand {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .co-name {
+            font-weight: 700;
+            font-size: 18px;
+            line-height: 1.2;
+            color: var(--ink);
+        }
+
+        .co-addr {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .month {
+            text-align: right;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .month strong {
+            display: block;
+            color: var(--ink);
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            padding: 12px 24px 8px 24px;
+            align-items: stretch;
+        }
+
+        .pairs {
+            display: grid;
+            grid-template-columns: 140px 8px 1fr;
+            row-gap: 6px;
+            column-gap: 8px;
+        }
+
+        .k {
+            font-size: 12px;
+            color: var(--ink);
+        }
+
+        .colon {
+            color: #9aa7b4;
+            text-align: center;
+        }
+
+        .v {
+            font-size: 12px;
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        .net-badge {
+            min-width: 220px;
+            align-self: flex-start;
+            border: 1px solid #;
+            border-radius: 8px;
+            color: #fff;
+            background: var(--success-ink);
+            padding: 14px 16px;
+        }
+
+        .net-badge .amt {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .net-badge .label {
+            font-size: 12px;
+            opacity: .8;
+            margin-top: 2px;
+        }
+
+        .box {
+            margin: 8px 24px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .th {
+            background: #f6f9fc;
+            font-weight: 700;
+            font-size: 12px;
+            color: var(--ink);
+            padding: 10px 12px;
+            display: grid;
+            grid-template-columns: 1fr 110px;
+            align-items: center;
+            border-right: 1px solid var(--line);
+        }
+
+        .th:nth-child(2) {
+            border-right: none;
+        }
+
+        .rows {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .col {
+            border-right: 1px solid var(--line);
+        }
+
+        .col:nth-child(2) {
+            border-right: none;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 110px;
+            align-items: center;
+            padding: 8px 12px;
+            border-top: 1px solid #eef3f7;
+        }
+
+        .rlabel {
+            font-size: 12px;
+            color: var(--ink);
+        }
+
+        .ramt {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--ink);
+            text-align: right;
+        }
+
+        .netbar {
+            margin: 12px 24px 0 24px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 140px;
+        }
+
+        .netbar .explain {
+            background-color: #f6f9fc;
+            font-size: 12px;
+            color: var(--muted);
+            padding: 10px 12px;
+        }
+
+        .netbar .total {
+            color: #fff;
+            background-color: var(--success-ink);
+            font-weight: 800;
+            text-align: right;
+            padding: 10px 12px;
+        }
+
+        .words {
+            text-align: center;
+            font-size: 12px;
+            color: var(--ink);
+            margin: 14px 24px 8px 24px;
+        }
+
+        .words b {
+            font-weight: 800;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--line);
+            margin: 12px 24px;
+        }
+
+        .foot-note {
+            text-align: center;
+            font-size: 11px;
+            color: #98a5b3;
+            margin: 8px 24px 0 24px;
+            font-style: italic;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #8b97a6;
+            font-size: 11px;
+            padding: 18px 24px 24px 24px;
+            margin-top: 415px;
+        }
+
+        .brand-mini {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .brand-mini img {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        @media screen and (max-width: 480px) {
+            .pairs {
+                grid-template-columns: 120px 6px 1fr;
+            }
+
+            .row {
+                grid-template-columns: 1fr 90px;
+            }
+
+            .th {
+                grid-template-columns: 1fr 90px;
+            }
+
+            .net-badge {
+                min-width: 180px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="sheet">
+        <header class="header">
+            <div class="brand">
+                <img class="logo" src="{{company.logoUrl}}" alt="Company Logo" />
+                <div>
+                    <div class="co-name">{{company.name}}</div>
+                    {{#if company.address}}<div class="co-addr">{{company.address}}</div>{{/if}}
+                </div>
+            </div>
+            <div class="month">Payslip For the Month<strong>{{pay.paymonth}}</strong></div>
+        </header>
+
+        <section class="summary">
+            <div class="pairs">
+                <div class="k">Employee Name</div>
+                <div class="colon">:</div>
+                <div class="v">{{employee.name}}</div>
+                <div class="k">Employee ID</div>
+                <div class="colon">:</div>
+                <div class="v">{{employee.id}}</div>
+                <div class="k">Designation</div>
+                <div class="colon">:</div>
+                <div class="v">{{employee.designation}}</div>
+                <div class="k">Pay Date</div>
+                <div class="colon">:</div>
+                <div class="v">{{pay.date}}</div>
+            </div>
+
+            <div class="net-badge">
+                <div class="amt">{{totals.netFormatted}}</div>
+                <div class="label">Total Net Pay</div>
+            </div>
+        </section>
+
+        <section class="box">
+            <div class="grid-2">
+                <div class="th">
+                    <div>EARNINGS</div>
+                    <div style="text-align:right;">AMOUNT</div>
+                </div>
+                <div class="th">
+                    <div>DEDUCTIONS</div>
+                    <div style="text-align:right;">AMOUNT</div>
+                </div>
+            </div>
+
+            <div class="rows">
+                <div class="col">
+                    {{#each earnings}}
+                    <div class="row">
+                        <div class="rlabel">{{this.label}}</div>
+                        <div class="ramt">{{this.amountFormatted}}</div>
+                    </div>
+                    {{/each}}
+                    <div class="row" style="background:#fafbfd; font-weight:800;">
+                        <div>Gross Earnings</div>
+                        <div class="ramt">{{totals.earningsFormatted}}</div>
+                    </div>
+                </div>
+                <div class="col">
+                    {{#each deductions}}
+                    <div class="row">
+                        <div class="rlabel">{{this.label}}</div>
+                        <div class="ramt">{{this.amountFormatted}}</div>
+                    </div>
+                    {{/each}}
+                    <div class="row" style="background:#fafbfd; font-weight:800;">
+                        <div>Total Deductions</div>
+                        <div class="ramt">{{totals.deductionsFormatted}}</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="netbar">
+            <div class="explain">TOTAL NET PAYABLE<br><small>Gross Earnings - Total Deductions</small></div>
+            <div class="total">{{totals.netFormatted}}</div>
+        </section>
+
+        <div class="words">Amount In Words : <b>{{totals.netInWords}}</b></div>
+        <div class="divider"></div>
+        <div class="foot-note">— This is a system-generated document. —</div>
+
+        <footer class="footer">
+            <div class="brand-mini"><img src="./public/logo/logo-dark.png" alt="brand" /><span>Powered by Waggex </span></div>
+        </footer>
+    </main>
+</body>
+
+</html>

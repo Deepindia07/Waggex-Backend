@@ -1,0 +1,99 @@
+# Logs & diagnostics
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Node diagnostic reports
+report.*.*.*.*.json
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# File storage
+uploads/
+
+# Coverage / testing
+lib-cov/
+coverage/
+*.lcov
+.nyc_output/
+.jest/
+jest-cache/
+.eslintcache
+.prettier-cache/
+
+# Build / output
+build/
+dist/
+out/
+# Next.js
+.next/
+# Nuxt
+.nuxt/
+# Gatsby
+# .cache/  # Uncomment if you use Gatsby
+# VuePress
+.vuepress/dist/
+
+# Tools & caches
+.grunt/
+bower_components/
+.lock-wscript
+build/Release/
+.npm/
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+.node_repl_history
+*.tgz
+.yarn-integrity
+.cache/
+.parcel-cache/
+.web_modules/
+.fusebox/
+.dynamodb/
+.tern-port
+.vscode-test/
+
+# Dependencies
+node_modules/
+jspm_packages/
+web_modules/
+
+# TypeScript
+*.tsbuildinfo
+
+# Yarn v2 / PnP
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+.pnp/
+
+# Env files (keep examples)
+.env
+.env.test
+.env.production
+.env.*.local
+!.env.example
+
+# IDE / OS
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Optional: keep placeholder files in ignored dirs
+# !uploads/.gitkeep
+# !reports/.gitkeep
