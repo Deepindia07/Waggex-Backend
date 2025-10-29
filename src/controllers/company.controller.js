@@ -11,6 +11,7 @@ const removeIfExists = async (absPath) => {
   } catch {
   }
 };
+
 export const createCompany = asyncHandler(async (req, res) => {
   const payload = companySchema.parse(req.body);
   const company = await createCompanySvc(payload);
