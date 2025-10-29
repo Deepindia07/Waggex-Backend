@@ -7,4 +7,5 @@ const c = Router();
 
 c.post("/", createCompany);
 c.get("/:id", getCompany);
+
 export default c;

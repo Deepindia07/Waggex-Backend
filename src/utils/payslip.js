@@ -5,7 +5,12 @@ import puppeteer from "puppeteer";
 import { ToWords } from "to-words";
 import { pathToFileURL } from "node:url";
 
-const localPath = path.join(process.cwd(), "public", "logo", "logo-dark.png");
+const localPath = path.join(
+  process.cwd(),
+  "public",
+  "logo",
+  "waggex-logo-dark.png"
+);
 const buf = await fs.readFile(localPath);
 const dataUrl = `data:image/png;base64,${buf.toString("base64")}`;
 const TEMPLATE_PATH = path.resolve("src/template/payslip.hbs");

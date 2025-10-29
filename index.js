@@ -8,6 +8,7 @@ import payslipRoutes from "./src/routes/payslip.routes.js";
 import { validatePayslip } from "./src/validators/paySlip.schema.js";
 import { fileURLToPath } from "url";
 import { uploadLogo } from "./src/middleware/uploadLogo.js";
+import superAdminPannelRoute from "./src/routes/super-admin-pannel/main.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,6 +22,8 @@ app.get("/", (_, res) => res.json({ ok: true }));
 app.use("/public", express.static(path.join(process.cwd(), "public")));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api/payslips", payslipRoutes);
+app.use("/api", superAdminPannelRoute);
+app.post("/api/test", (_, res) => res.json({ ok: true, message: "success" }));
 
 // basic error handler
 app.use((err, req, res, next) => {

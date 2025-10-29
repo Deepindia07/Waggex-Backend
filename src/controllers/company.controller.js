@@ -1,15 +1,16 @@
 import asyncHandler from "../utils/asyncHandler.js";
-import { companySchema } from "../validators/company.schema.js";
+// import { companySchema } from "../validators/company.schema.js";
 import {
   createCompanySvc,
   getCompanyByIdSvc,
 } from "../services/company.service.js";
+import Company from "../models/company.js";
+import { companySchema } from "../validators/paySlip.schema.js";
 
 const removeIfExists = async (absPath) => {
   try {
     await fs.unlink(absPath);
-  } catch {
-  }
+  } catch {}
 };
 
 export const createCompany = asyncHandler(async (req, res) => {
