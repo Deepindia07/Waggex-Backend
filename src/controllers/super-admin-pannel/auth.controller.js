@@ -124,6 +124,7 @@ export const loginController = async (req, res) => {
 
     // compare password (via instance method or bcrypt directly)
     const isMatch = await user.comparePassword(password);
+
     if (!isMatch) {
       return res
         .status(401)

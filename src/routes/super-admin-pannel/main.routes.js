@@ -11,6 +11,6 @@ const superAdminPannelRoute = Router();
 superAdminPannelRoute.get("/companies", companies);
 superAdminPannelRoute.get("/employee", employees);
 superAdminPannelRoute.post("/create-super-admin", registerController);
-superAdminPannelRoute.post("/login", loginController);
+superAdminPannelRoute.post("/login-super-admin", loginController);
 
 export default superAdminPannelRoute;

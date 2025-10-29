@@ -99,7 +99,7 @@ app.use("/public", express.static(path.join(process.cwd(), "public")));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.use("/api/payslips", payslipRoutes);
-app.use("/api", superAdminPannelRoute); // ensure this router has NO catch-all like router.all('*', ...)
+app.use("/api/super-admin-pannel", superAdminPannelRoute); // ensure this router has NO catch-all like router.all('*', ...)
 
 /* ---------- Error handler ---------- */
 app.use((err, _req, res, _next) => {

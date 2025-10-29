@@ -1,7 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import Handlebars from "handlebars";
-import puppeteer from "puppeteer";
+// import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
 import { ToWords } from "to-words";
 import { pathToFileURL } from "node:url";
 
@@ -115,9 +116,20 @@ export async function htmlToPdfBuffer(html) {
   //   args: ["--allow-file-access-from-files"],
   // });
 
+  const defaultExe =
+    process.env.PUPPETEER_EXECUTABLE_PATH ||
+    "/opt/render/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome"; // glob-ish; see note below
+
   const browser = await puppeteer.launch({
+    executablePath: defaultExe,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-gpu",
+      "--no-zygote",
+      "--single-process",
+    ],
     headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
   const page = await browser.newPage();
