@@ -110,10 +110,16 @@ export async function buildHtmlFromApi(data) {
 
 export async function htmlToPdfBuffer(html) {
   // Launch with file access (helps when HTML pulls local assets)
+  // const browser = await puppeteer.launch({
+  //   headless: "new",
+  //   args: ["--allow-file-access-from-files"],
+  // });
+
   const browser = await puppeteer.launch({
-    headless: "new",
-    args: ["--allow-file-access-from-files"],
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
+
   const page = await browser.newPage();
   await page.setContent(html, { waitUntil: "networkidle0" });
 
