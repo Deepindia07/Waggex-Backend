@@ -37,6 +37,9 @@ const PayslipSchema = new mongoose.Schema(
 
     // Optional metadata
     meta: { type: Object, default: {} },
+    pdfUrl: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

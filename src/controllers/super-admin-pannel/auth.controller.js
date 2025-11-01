@@ -154,3 +154,157 @@ export const loginController = async (req, res) => {
     });
   }
 };
+
+export const getProfile = async (req, res) => {
+  console.log("req.user.userId", req.user);
+  const startTime = new Date().getTime();
+  try {
+    const user = await User.findByPk(req.user.id, {
+      attributes: { exclude: ["password"] }, // don't return password
+    });
+
+    console.log("user", user);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not exist, go to signup page",
+        time: new Date().getTime() - startTime,
+      });
+    }
+
+    // ✅ Check if role is SUPERADMIN
+    // if (user.role !== "SUPERADMIN" || user.role !== "CA") {
+    //   return res.status(403).json({
+    //     success: false,
+    //     message: "Access denied. Only SUPERADMIN can access this profile.",
+    //     time: new Date().getTime() - startTime,
+    //   });
+    // }
+
+    return res.status(200).json({
+      success: true,
+      message: "Get SUPERADMIN Profile Successfully",
+      data: user,
+      time: new Date().getTime() - startTime,
+    });
+  } catch (err) {
+    console.log("error", err);
+
+    res.status(500).json({
+      err,
+    });
+  }
+};
+
+export const changePassword = async (req, res, next) => {
+  const startTime = new Date().getTime();
+  const { old_password, new_password } = req.body;
+  try {
+    const user = await User.findByPk(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // verify old password
+    const isPasswordCorrect = await bcrypt.compare(old_password, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(400).json({
+        success: false,
+        message: "Old password does not match",
+      });
+    }
+
+    // check if new password is same as old
+    const isSamePassword = await bcrypt.compare(new_password, user.password);
+    if (isSamePassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password cannot be the same as the old password",
+      });
+    }
+
+    // encrypt new password
+    const hashedPassword = await bcrypt.hash(new_password, 10);
+    user.password = hashedPassword;
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
+      time: new Date().getTime() - startTime,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  const startTime = new Date().getTime();
+  const {
+    firstName,
+    lastName,
+    email,
+
+    countryCode,
+    phoneNumber,
+
+    address,
+    gender,
+    role,
+    userType,
+  } = req.body;
+
+  const files = req.files;
+  if (!files || files.length === 0) {
+    return res.status(400).json({ message: "No image provided" });
+  }
+
+  const profileImage = `${baseUrl}/uploads/insurance/${files[0].filename}`;
+
+  console.log("profile image from controller ", profileImage);
+
+  try {
+    const user = await User.findByPk(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not exist, go to signup page",
+      });
+    }
+
+    // update only provided fields
+    user.firstName = firstName ?? user.firstName;
+    user.lastName = lastName ?? user.lastName;
+    user.email = email ?? user.email;
+    // user.profileImage = profileImage ?? user.profileImage;
+    user.countryCode = countryCode ?? user.countryCode;
+    user.phoneNumber = phoneNumber ?? user.phoneNumber;
+    user.address = address ?? user.address;
+    user.gender = gender ?? user.gender;
+    user.role = "SUPERADMIN";
+    user.userType = userType ?? user.userType;
+    user.profileImage = profileImage ?? user.profileImage;
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Update Profile Successfully",
+      data: user,
+      time: new Date().getTime() - startTime,
+    });
+  } catch (err) {
+    console.log("error", err);
+
+    res.status(500).json({
+      message: "internal server error",
+      err,
+    });
+  }
+};

@@ -10,6 +10,11 @@ const CompanySchema = new mongoose.Schema(
     country: String,
     zip: String,
     logo: String,
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Employee",
+      index: true,
+    },
   },
   { timestamps: true }
 );

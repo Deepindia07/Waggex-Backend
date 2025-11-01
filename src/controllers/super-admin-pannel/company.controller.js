@@ -53,3 +53,57 @@ export const companies = async (req, res) => {
     });
   }
 };
+
+// GET /super-admin/employee?withCompanyCreateCounts=1
+export const employeesWithCreatedCounts = async (_req, res) => {
+  const rows = await Employee.aggregate([
+    {
+      $lookup: {
+        from: "companies",
+        let: { empId: "$_id" },
+        pipeline: [{ $match: { $expr: { $eq: ["$createdBy", "$$empId"] } } }],
+        as: "createdCompanies",
+      },
+    },
+    { $addFields: { companiesCreated: { $size: "$createdCompanies" } } },
+    { $project: { createdCompanies: 0 } },
+  ]);
+  res.json({ success: true, items: rows });
+};
+
+// GET /super-admin/employees/:employeeId/company-count
+export const employeeCompanyCreatedCount = async (req, res) => {
+  const { employeeId } = req.params;
+  const count = await Company.countDocuments({ createdBy: employeeId });
+  res.json({ success: true, employeeId, companiesCreated: count });
+};
+
+export const getCompaniesCreatedByEmployee = async (req, res) => {
+  try {
+    const { employeeId } = req.params;
+
+    // Count all companies created by this employee
+    const totalCompanies = await Company.countDocuments({
+      createdBy: employeeId,
+    });
+
+    // Optionally, list them too
+    const companies = await Company.find({ createdBy: employeeId })
+      .select("name city state country createdAt")
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      message: "Companies created by employee fetched successfully",
+      employeeId,
+      totalCompanies,
+      companies,
+    });
+  } catch (error) {
+    console.error("Error fetching companies created by employee:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch companies created by this employee",
+    });
+  }
+};

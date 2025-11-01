@@ -4,6 +4,7 @@ import fs from "fs/promises";
 import Company from "../models/company.js";
 import Employee from "../models/employee.js";
 import Payslip from "../models/payslip.js";
+
 import { UPLOADS_ROOT } from "../middleware/uploadLogo.js";
 import { buildHtmlFromApi, htmlToPdfBuffer } from "../utils/payslip.js";
 
@@ -84,6 +85,20 @@ export const createPayslip = async (req, res) => {
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 
+    console.log("employee?.employeeId", employee?.employeeId);
+    if (employee?.employeeId && employeeDoc?._id) {
+      // Only update if not already set or differs
+      if (
+        !companyDoc.createdBy ||
+        companyDoc.createdBy.toString() !== employeeDoc._id.toString()
+      ) {
+        await Company.updateOne(
+          { _id: companyDoc._id },
+          { $set: { createdBy: employeeDoc._id } }
+        );
+      }
+    }
+
     // --- 3) Compute totals ---
     const arr = (x) => (Array.isArray(x) ? x : []);
     const normEarnings = arr(earningsIn).map((l) => ({
@@ -143,6 +158,16 @@ export const createPayslip = async (req, res) => {
     const filePath = path.join(outDir, fileName);
     await fs.writeFile(filePath, pdf);
 
+    // ==========
+
+    // >>> SAVE PATH (relative URL) into pdfUrl
+    const relativeUrl = `/uploads/pdfs/${fileName}`;
+    await Payslip.updateOne(
+      { _id: payslipDoc._id },
+      { $set: { pdfUrl: relativeUrl } }
+    );
+
+    // ==========
     // 5) Build a PUBLIC URL (served via /static)
     const publicUrl = `${req.protocol}://${req.get(
       "host"

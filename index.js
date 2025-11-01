@@ -59,6 +59,7 @@ import { fileURLToPath } from "url";
 
 import payslipRoutes from "./src/routes/payslip.routes.js";
 import superAdminPannelRoute from "./src/routes/super-admin-pannel/main.routes.js";
+import contactUsRouter from "./src/routes/contactus.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -66,14 +67,15 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 /* ---------- Middleware ---------- */
-app.use(
-  cors({
-    origin: "*", // or ["https://your-frontend.com"]
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: false,
-  })
-);
+app.use(cors());
+// app.use(
+//   cors({
+//     origin: "*", // or ["https://your-frontend.com"]
+//     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//     credentials: false,
+//   })
+// );
 // app.options("*", cors()); // handle preflight for all routes
 
 app.use(express.json({ limit: "1mb" }));
@@ -100,6 +102,7 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.use("/api/payslips", payslipRoutes);
 app.use("/api/super-admin-pannel", superAdminPannelRoute); // ensure this router has NO catch-all like router.all('*', ...)
+app.use("/api", contactUsRouter);
 
 /* ---------- Error handler ---------- */
 app.use((err, _req, res, _next) => {
