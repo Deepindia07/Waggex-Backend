@@ -159,11 +159,11 @@ export const createPayslip = async (req, res) => {
     const idStr = payslipDoc._id.toString();
     const outDir = path.join(process.cwd(), "uploads", "pdfs");
     await fs.mkdir(outDir, { recursive: true });
-
+    logger.info("createPayslip 12"); // <-- use it
     const fileName = `payslip-${idStr}.pdf`;
     const filePath = path.join(outDir, fileName);
     await fs.writeFile(filePath, pdf);
-
+    logger.info("createPayslip 13"); // <-- use it
     // ==========
 
     // >>> SAVE PATH (relative URL) into pdfUrl
@@ -172,12 +172,14 @@ export const createPayslip = async (req, res) => {
       { _id: payslipDoc._id },
       { $set: { pdfUrl: relativeUrl } }
     );
-
+    logger.info("createPayslip 14"); // <-- use it
     // ==========
     // 5) Build a PUBLIC URL (served via /static)
     const publicUrl = `${req.protocol}://${req.get(
       "host"
     )}/uploads/pdfs/${encodeURIComponent(fileName)}`;
+
+    logger.info("createPayslip 15"); // <-- use it
     // 6) Return JSON (convert doc to plain object)
     return res.status(201).json({
       ...populated.toObject(), // or payslipDoc.toObject() if you don't need populated fields in response
