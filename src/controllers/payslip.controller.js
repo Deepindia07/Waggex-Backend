@@ -7,6 +7,7 @@ import Payslip from "../models/payslip.js";
 
 import { UPLOADS_ROOT } from "../middleware/uploadLogo.js";
 import { buildHtmlFromApi, htmlToPdfBuffer } from "../utils/payslip.js";
+import logger from "../utils/logger.js";
 
 const toNumber = (v) =>
   v === undefined || v === null || v === "" ? 0 : Number(v) || 0;
@@ -25,6 +26,7 @@ const safeDate = (v) => {
 
 export const createPayslip = async (req, res) => {
   try {
+    logger.info("createPayslip 1"); // <-- use it
     const company = parseMaybeJSON(req.body.company) ?? req.body.company ?? {};
     const employee =
       parseMaybeJSON(req.body.employee) ?? req.body.employee ?? {};
@@ -33,14 +35,14 @@ export const createPayslip = async (req, res) => {
     const deductIn =
       parseMaybeJSON(req.body.deductions) ?? req.body.deductions ?? [];
     const payMonth = req.body.payMonth;
-
+    logger.info("createPayslip 2"); // <-- use it
     if (!company?.name) {
       return res.status(400).json({ error: "company.name is required" });
     }
     if (!employee?.employeeId) {
       return res.status(400).json({ error: "employee.employeeId is required" });
     }
-
+    logger.info("createPayslip 3"); // <-- use it
     // If Multer saved a file, store public path in Mongo
     const logoPath = req.file
       ? `/uploads/logos/${req.file.filename}`
@@ -51,17 +53,19 @@ export const createPayslip = async (req, res) => {
       name: company.name,
       ...(company.zip ? { zip: company.zip } : {}),
     };
-    const existingCompany = await Company.findOne(companyFilter).lean();
 
+    logger.info("createPayslip 4"); // <-- use it
+    const existingCompany = await Company.findOne(companyFilter).lean();
+    logger.info("createPayslip 5", existingCompany); // <-- use it
     const companyUpdate = { ...company };
     if (logoPath) companyUpdate.logo = logoPath;
-
+    logger.info("createPayslip 6", companyUpdate); // <-- use it
     const companyDoc = await Company.findOneAndUpdate(
       companyFilter,
       { $set: companyUpdate },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
-
+    logger.info("createPayslip 7", companyDoc); // <-- use it
     // Delete old logo if replaced and inside /uploads/logos
     if (logoPath && existingCompany?.logo) {
       const projectRoot = path.join(UPLOADS_ROOT, ".."); // one up from /uploads
@@ -79,12 +83,14 @@ export const createPayslip = async (req, res) => {
       company: companyDoc._id,
       employeeId: employee.employeeId,
     };
+
     const employeeDoc = await Employee.findOneAndUpdate(
       employeeFilter,
       { $set: { ...employee, company: companyDoc._id } },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 
+    logger.info("createPayslip 8", companyDoc); // <-- use it
     console.log("employee?.employeeId", employee?.employeeId);
     if (employee?.employeeId && employeeDoc?._id) {
       // Only update if not already set or differs
@@ -98,7 +104,7 @@ export const createPayslip = async (req, res) => {
         );
       }
     }
-
+    logger.info("createPayslip 9"); // <-- use it
     // --- 3) Compute totals ---
     const arr = (x) => (Array.isArray(x) ? x : []);
     const normEarnings = arr(earningsIn).map((l) => ({
@@ -116,7 +122,7 @@ export const createPayslip = async (req, res) => {
       0
     );
     const net = gross - totalDeductions;
-
+    logger.info("createPayslip 10"); // <-- use it
     // --- 4) Build payslip payload ---
     const payslipPayload = {
       company: companyDoc._id,
@@ -145,7 +151,7 @@ export const createPayslip = async (req, res) => {
       employee: populated.employee, // or modify builder accordingly
       payslip: populated,
     });
-
+    logger.info("createPayslip 11"); // <-- use it
     // 3) Render PDF
     const pdf = await htmlToPdfBuffer(html);
 

@@ -5,6 +5,7 @@ import puppeteer from "puppeteer";
 
 import { ToWords } from "to-words";
 import { pathToFileURL } from "node:url";
+import logger from "./logger.js";
 
 const localPath = path.join(
   process.cwd(),
@@ -111,21 +112,23 @@ export async function buildHtmlFromApi(data) {
 }
 
 export async function htmlToPdfBuffer(html) {
+  logger.info("htmlToPdfBuffer func 1"); // <-- use it
   // Launch with file access (helps when HTML pulls local assets)
-  // const browser = await puppeteer.launch({
-  //   headless: "new",
-  //   args: ["--allow-file-access-from-files"],
-  // });
-
   const browser = await puppeteer.launch({
-    args: [
-      "--no-sandbox", // Essential for non-privileged environments
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage", // Recommended for Linux environments
-      "--single-process", // May help with memory
-    ],
-    // ... other options
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
+
+  logger.info("htmlToPdfBuffer func 2"); // <-- use it
+  // const browser = await puppeteer.launch({
+  //   args: [
+  //     "--no-sandbox", // Essential for non-privileged environments
+  //     "--disable-setuid-sandbox",
+  //     "--disable-dev-shm-usage", // Recommended for Linux environments
+  //     "--single-process", // May help with memory
+  //   ],
+  //   // ... other options
+  // });
 
   const page = await browser.newPage();
   await page.setContent(html, { waitUntil: "networkidle0" });
