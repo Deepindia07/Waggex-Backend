@@ -178,6 +178,7 @@ export const createPayslip = async (req, res) => {
       pdfUrl: publicUrl,
     });
   } catch (err) {
+    console.log("error", err);
     // Clean up newly uploaded file if DB op fails
     if (req.file) {
       try {
@@ -193,6 +194,6 @@ export const createPayslip = async (req, res) => {
         .json({ error: "Duplicate record", details: err.keyValue });
     }
     console.error("createPayslip error:", err);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error", err });
   }
 };
